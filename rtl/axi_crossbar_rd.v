@@ -359,11 +359,11 @@ generate
 
         for (n = 0; n < M_COUNT; n = n + 1) begin
             assign r_request[n] = int_axi_rvalid[n*S_COUNT+m] && !r_grant[n];
-            assign r_acknowledge[n] = r_grant[n] && int_axi_rvalid[n*S_COUNT+m] && m_axi_rlast_mux && m_axi_rready_mux;
+            assign r_acknowledge[n] = r_grant[n] && int_axi_rvalid[n*S_COUNT+m] /*&& m_axi_rlast_mux*/ && m_axi_rready_mux;
         end
 
         assign r_request[M_COUNT_P1-1] = decerr_m_axi_rvalid_reg && !r_grant[M_COUNT_P1-1];
-        assign r_acknowledge[M_COUNT_P1-1] = r_grant[M_COUNT_P1-1] && decerr_m_axi_rvalid_reg && decerr_m_axi_rlast_reg && m_axi_rready_mux;
+        assign r_acknowledge[M_COUNT_P1-1] = r_grant[M_COUNT_P1-1] && decerr_m_axi_rvalid_reg /*&& decerr_m_axi_rlast_reg*/ && m_axi_rready_mux;
 
         assign s_cpl_id = m_axi_rid_mux;
         assign s_cpl_valid = m_axi_rvalid_mux && m_axi_rready_mux && m_axi_rlast_mux;
