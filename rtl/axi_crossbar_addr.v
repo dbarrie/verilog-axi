@@ -270,7 +270,6 @@ reg [CL_M_COUNT-1:0] thread_m_reg[S_INT_THREADS-1:0];
 reg [3:0] thread_region_reg[S_INT_THREADS-1:0];
 reg [$clog2(S_ACCEPT+1)-1:0] thread_start_count_reg[S_INT_THREADS-1:0];
 reg [$clog2(S_ACCEPT+1)-1:0] thread_complete_count_reg[S_INT_THREADS-1:0];
-reg thread_active_reg[S_INT_THREADS-1:0];
 
 wire [S_INT_THREADS-1:0] thread_active;
 wire [S_INT_THREADS-1:0] thread_match;
@@ -286,11 +285,9 @@ generate
         initial begin
             thread_start_count_reg[n] <= 0;
             thread_complete_count_reg[n] <= 0;
-            thread_active_reg[n] <= 0;
         end
 
-        //assign thread_active[n] = thread_start_count_reg[n] != thread_complete_count_reg[n];
-        assign thread_active[n] = thread_active_reg[n];
+        assign thread_active[n] = thread_start_count_reg[n] != thread_complete_count_reg[n];
         assign thread_match[n] = thread_active[n] && thread_id_reg[n] == s_axi_aid;
         assign thread_match_dest[n] = thread_match[n] && thread_m_reg[n] == m_select_next && (M_REGIONS < 2 || thread_region_reg[n] == m_axi_aregion_next);
         assign thread_cpl_match[n] = thread_active[n] && thread_id_reg[n] == s_cpl_id;
@@ -301,11 +298,9 @@ generate
             if (rst) begin
                 thread_start_count_reg[n] <= 0;
                 thread_complete_count_reg[n] <= 0;
-                thread_active_reg[n] <= 0;
             end else begin
                 thread_start_count_reg[n] <= thread_start_count_reg[n] + thread_trans_start[n];
                 thread_complete_count_reg[n] <= thread_complete_count_reg[n] + thread_trans_complete[n];
-                thread_active_reg[n] <= (thread_start_count_reg[n] + thread_trans_start[n]) != (thread_complete_count_reg[n] + thread_trans_complete[n]);
             end
 
             if (thread_trans_start[n]) begin
